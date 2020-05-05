@@ -1,7 +1,7 @@
 import { observable, computed } from "mobx";
 
-import notificationDb from "../db/NotificationDb";
-import userStore from "./UserStore";
+import notificationDb from "../db/notificationDb";
+import userStore from "./userStore";
 
 class NotificationStore {
   init() {
@@ -43,20 +43,20 @@ class NotificationStore {
 
   @computed
   get notifications() {
-    const unfiltered = this.notificationMap.toJS();
     let notifs = {};
-    for (let key in unfiltered) {
-      const notif = unfiltered[key];
+    this.notificationMap.forEach((notif, key) => {
       if (notif.status === "unread" || notif.actions) {
         notifs[key] = notif;
       }
-    }
-    return unfiltered;
+    });
+    return notifs;
   }
 
   @computed
   get allNotifications() {
-    return this.notificationMap.toJS();
+    let allNotifs = {};
+    this.notificationMap.forEach((n, id) => (allNotifs[id] = n));
+    return allNotifs;
   }
 
   getNotificationById(notificationId) {

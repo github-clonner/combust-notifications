@@ -3,30 +3,21 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import { observer } from "mobx-react";
 
-import notificationStore from "../../stores/NotificationStore";
+import notificationStore from "../../stores/notificationStore";
 
 @observer
-export default class Notification extends Component {
+class Notification extends Component {
   state = {
-    displayAsUnread: false
+    shouldMarkAsRead: true
   };
 
-  componentDidMount() {
-    this.markNotifAsRead();
-  }
-
-  componentDidUpdate() {
-    this.markNotifAsRead();
+  componentWillUnmount() {
+    this.state.shouldMarkAsRead && this.markNotifAsRead();
   }
 
   markNotifAsRead() {
     const { notification } = this.props;
-    if (notification.status === "unread" && !this.state.displayAsUnread) {
-      debugger;
-      //mark as read in db, but continue displaying new on screen
-      this.setState({ displayAsUnread: true });
-      notificationStore.markNotifAsRead(notification.id);
-    }
+    notificationStore.markNotifAsRead(notification.id);
   }
 
   render() {
@@ -40,7 +31,6 @@ export default class Notification extends Component {
             className="uk-link-text"
             onClick={e => {
               notificationStore.markNotifAsClicked(notification.id);
-              this.setState({ displayAsUnread: false });
               toggleDropDown && toggleDropDown();
             }}
           >
@@ -51,7 +41,7 @@ export default class Notification extends Component {
         )}
         <div className="uk-text-meta uk-flex uk-flex-between">
           <span>{moment(notification.createdAt).fromNow()}</span>
-          {notification.status === "unread" || this.state.displayAsUnread ? (
+          {notification.status === "unread" ? (
             <span className="uk-text-primary">new</span>
           ) : (
             <span>
@@ -67,10 +57,12 @@ export default class Notification extends Component {
                   key={actionI}
                   className="uk-button uk-button-default uk-button-small"
                   onClick={e => {
-                    notificationStore.handleNotificationAction(
-                      notification,
-                      action
-                    );
+                    this.setState({ shouldMarkAsRead: false }, () => {
+                      notificationStore.handleNotificationAction(
+                        notification,
+                        action
+                      );
+                    });
                   }}
                 >
                   {action}
@@ -83,3 +75,5 @@ export default class Notification extends Component {
     );
   }
 }
+
+export default Notification;

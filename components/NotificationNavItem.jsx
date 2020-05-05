@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
 
-import userStore from "../../stores/UserStore";
-import notificationStore from "../../stores/NotificationStore";
+import userStore from "../../stores/userStore";
+import notificationStore from "../../stores/notificationStore";
 import Notification from "./Notification";
 import Icon from "../reusable/Icon";
 import "./styles/Notifications.scss";
 
 @observer
-export default class NotificationNavItem extends Component {
+class NotificationNavItem extends Component {
   state = {
     isOpen: false
   };
@@ -26,28 +26,27 @@ export default class NotificationNavItem extends Component {
     const notifications = notificationStore.notifications;
     let notifKeys = notifications ? Object.keys(notifications) : [];
     let numNotifications = 0;
-    notifKeys.forEach(id => {
-      numNotifications += notifications[id].status === "unread" ? 1 : 0;
-    });
+    !this.state.isOpen && // once dropdown is open, remove number badge
+      notifKeys.forEach(id => {
+        numNotifications += notifications[id].status === "unread" ? 1 : 0;
+      });
     notifKeys = notifKeys.reverse().slice(0, 5); //render 5 most recent notifs
 
     return (
       <div className="NotificationNavItem uk-navbar-item">
-        <span className="uk-inline">
-          <Icon
-            className={
-              "uk-position-center uk-icon " +
-              (numNotifications > 0 ? "uk-text-danger" : "uk-text")
-            }
-            onClick={this.toggleDropDown}
-            type="bell"
-          />
-          {numNotifications > 0 && (
-            <span className="uk-badge badge-danger uk-position-bottom-left">
-              {numNotifications}
-            </span>
-          )}
-        </span>
+        <Icon
+          className={
+            "uk-position-center uk-icon " +
+            (numNotifications > 0 ? "uk-text-danger" : "uk-text")
+          }
+          onClick={this.toggleDropDown}
+          type="bell"
+        />
+        {numNotifications > 0 && (
+          <span className="uk-badge badge-danger uk-position-bottom-left">
+            {numNotifications}
+          </span>
+        )}
         {this.state.isOpen && (
           <div className="uk-card uk-card-default uk-padding-small dropdown">
             <ul className="uk-nav uk-dropdown-nav">
@@ -86,3 +85,5 @@ export default class NotificationNavItem extends Component {
     );
   }
 }
+
+export default NotificationNavItem;

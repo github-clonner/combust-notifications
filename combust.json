@@ -3,15 +3,17 @@
     "users": "latest"
   },
   "installation": {
-    "components/Routes.jsx": {
-      "imports": ["import NotifHistory from \"./notifications/NotifHistory\";"],
+    "src/components/app/Routes.jsx": {
+      "imports": [
+        "import NotifHistory from \"../notifications/NotifHistory\";"
+      ],
       "renderEnd": [
         "<Route path=\"/notifications\" component={NotifHistory} />"
       ]
     },
-    "components/Navbar.jsx": {
+    "src/components/app/Navbar.jsx": {
       "imports": [
-        "import NotificationNavItem from \"./notifications/NotificationNavItem\";"
+        "import NotificationNavItem from \"../notifications/NotificationNavItem\";"
       ],
       "after": {
         "pattern": "uk-navbar-right\">",
@@ -20,7 +22,7 @@
     }
   },
   "installation_mobile": {
-    "components/Routes.js": {
+    "src/components/app/Routes.js": {
       "imports": ["import NotifHistory from \"./notifications/NotifHistory\";"],
       "after": {
         "pattern": "COMBUST_SCREENS = {",
@@ -29,7 +31,7 @@
         ]
       }
     },
-    "components/reusable/SideMenu.js": {
+    "src/components/reusable/SideMenu.js": {
       "after": {
         "pattern": "const COMBUST_MENU_ITEMS = [",
         "code": [
@@ -43,7 +45,7 @@
       "$uid": {
         ".read": "$uid === auth.uid",
         "$notifId": {
-          ".write": "!data.exists()"
+          ".write": "!data.exists() || (!newData.exists() && $uid === auth.uid)"
         }
       }
     },
